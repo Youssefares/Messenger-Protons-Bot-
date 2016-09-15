@@ -86,17 +86,13 @@ function sendMessage(recipientId, message) {
 
 // sends structured message with a generic template
 function sendGenericMessage(recipientId) {
-  var messageData = {
-    recipient: {
-      id: recipientId
-    },
-    message: {
+  
+    var message = {
       attachment: {
         type: "template",
         payload: {
           template_type: "generic",
-          elements: [
-          {
+          elements: [{
             title: "rift",
             subtitle: "Next-generation virtual reality",
             item_url: "https://www.oculus.com/en-us/rift/",               
@@ -111,13 +107,11 @@ function sendGenericMessage(recipientId) {
               type: "postback",
               title: "Call Postback",
               payload: "Payload for first bubble",
-            }
-            ]
+            }]
           }]
         }
       }
-    }
-  };  
+    }; 
 
-  sendMessage(messageData);
+  sendMessage(recipientId, messageData);
 }
