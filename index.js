@@ -93,25 +93,22 @@ function sendGenericMessage(recipientId) {
         payload: {
           template_type: "generic",
           elements: [{
-            title: "rift",
-            subtitle: "Next-generation virtual reality",
-            item_url: "https://www.oculus.com/en-us/rift/",               
-            image_url: "http://messengerdemo.parseapp.com/img/rift.png",
-            buttons: [
-            {
+            title: "You might find this helpful",
+            subtitle: "stackoverflow similar error",
+            item_url: "http://stackoverflow.com/search?q="+trouble,               
+            image_url: "http://stacktoheap.com/images/stackoverflow.png",
+            buttons: [{
               type: "web_url",
-              url: "https://www.oculus.com/en-us/rift/",
-              title: "Open Web URL"
-            }, 
-            {
+              url: "http://stackoverflow.com/search?q="+trouble,
+              title: "Get Help from Stack"
+            }, {
               type: "postback",
-              title: "Call Postback",
+              title: "This wasn't helpful?",
               payload: "Payload for first bubble",
-            }]
+            }],
           }]
         }
       }
-    }; 
-
+    };
   sendMessage(recipientId, message);
 }
