@@ -108,7 +108,6 @@ function callSendAPI(messageData) {
 
 // sends structured message with a generic template
 function sendGenericMessage(recipientId) {
-  var trouble = "error";
   var messageData = {
     recipient: {
       id: recipientId
@@ -119,14 +118,14 @@ function sendGenericMessage(recipientId) {
         payload: {
           template_type: "generic",
           elements: [{
-            title: "You might find this helpful",
-            subtitle: "stackoverflow similar error",
-            item_url: "http://stackoverflow.com/search?q="+trouble,               
-            image_url: "http://stacktoheap.com/images/stackoverflow.png",
+            title: "rift",
+            subtitle: "Next-generation virtual reality",
+            item_url: "https://www.oculus.com/en-us/rift/",               
+            image_url: "http://messengerdemo.parseapp.com/img/rift.png",
             buttons: [{
               type: "web_url",
-              url: "http://stackoverflow.com/search?q="+trouble,
-              title: "Get Help from Stack"
+              url: "https://www.oculus.com/en-us/rift/",
+              title: "Open Web URL"
             }, {
               type: "postback",
               title: "Call Postback",
