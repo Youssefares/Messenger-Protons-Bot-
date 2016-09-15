@@ -59,7 +59,7 @@ function receivedMessage(event){
 	  		sendToStack(senderID,errorMessage);
 	  	}
 	  	else{
-	  		sendMessage(senderID, {text: "did you just say " + event.message.text+"?"});
+	  		sendMessage(senderID, {text: "did you just say " + event.message.text+"?"+index});
 	  	}
 	  }
 }
