@@ -54,7 +54,7 @@ function receivedMessage(event){
 	  if (messageText){
 	  	messageText = messageText.toLowerCase();
 	  	var index = messageText.search("error");
-	  	if (index > 0){
+	  	if (index >= 0){
 	  		var errorMessage = messageText.slice(index,messageText.length);
 	  		sendToStack(senderID,errorMessage);
 	  	}
@@ -93,7 +93,7 @@ function sendToStack(recipientId,trouble) {
           template_type: "generic",
           elements: [{
             title: "You might find this helpful",
-            subtitle: "stackoverflow similar error",
+            subtitle: "It's yelling: "+trouble,
             item_url: "http://stackoverflow.com/search?q="+trouble,               
             image_url: "https://d13yacurqjgara.cloudfront.net/users/1249/screenshots/1889069/stackoverflow-logo.png",
             buttons: [{
