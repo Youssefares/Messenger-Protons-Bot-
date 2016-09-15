@@ -113,5 +113,5 @@ function sendGenericMessage(recipientId) {
       }
     }; 
 
-  sendMessage(recipientId, messageData);
+  sendMessage(recipientId, message);
 }
