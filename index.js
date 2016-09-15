@@ -87,7 +87,7 @@ function sendTextMessage(recipientId, message) {
 
 // sends structured message with a generic template
 function sendGenericMessage(recipientId) {
-  var trouble = "error"
+  var trouble = "error";
   var messageData = {
     recipient: {
       id: recipientId
