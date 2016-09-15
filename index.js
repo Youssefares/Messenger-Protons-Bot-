@@ -54,11 +54,11 @@ function receivedMessage(event){
 	  if (messageText) {
 	  	switch(messageText){
 	  		case 'error': //stack
-	  		sendGenericMessage(recipientID);
+	  		sendGenericMessage(senderID);
 	  		break;
 
 	  		default: //echo
-	  		sendTextMessage(senderID, {text: "did you just say" + event.messageText+"?"});
+	  		sendTextMessage(senderID, {text: "did you just say" + messageText+"?"});
         
 	  	}
 	  }
