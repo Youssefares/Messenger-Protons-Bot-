@@ -51,15 +51,15 @@ function receivedMessage(event){
 	  var messageText = message.text;
 	  var messageAttachments = message.attachments;
 
-	  if (messageText) {
-	  	switch(messageText){
-	  		case 'error': //stack
-	  		sendGenericMessage(senderID);
-	  		break;
-
-	  		default: //echo
+	  if (messageText){
+	  	messageText = messageText.toLowerCase();
+	  	var index = messageText.search("error");
+	  	if (index > 0){
+	  		var errorMessage = messageText.slice(index,messageText.length);
+	  		sendToStack(senderID,errorMessage);
+	  	}
+	  	else{
 	  		sendMessage(senderID, {text: "did you just say " + event.message.text+"?"});
-        
 	  	}
 	  }
 }
@@ -85,8 +85,7 @@ function sendMessage(recipientId, message) {
 
 
 // sends structured message with a generic template
-function sendGenericMessage(recipientId) {
-  var trouble = "error";
+function sendToStack(recipientId,trouble) {
     var message = {
       attachment: {
         type: "template",
@@ -96,14 +95,14 @@ function sendGenericMessage(recipientId) {
             title: "You might find this helpful",
             subtitle: "stackoverflow similar error",
             item_url: "http://stackoverflow.com/search?q="+trouble,               
-            image_url: "http://stacktoheap.com/images/stackoverflow.png",
+            image_url: "https://d13yacurqjgara.cloudfront.net/users/1249/screenshots/1889069/stackoverflow-logo.png",
             buttons: [{
               type: "web_url",
               url: "http://stackoverflow.com/search?q="+trouble,
-              title: "Get Help from Stack"
+              title: "Go to Stack"
             }, {
               type: "postback",
-              title: "This wasn't helpful?",
+              title: "Not helpful?",
               payload: "Payload for first bubble",
             }],
           }]
