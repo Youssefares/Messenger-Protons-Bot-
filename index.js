@@ -55,7 +55,7 @@ function receivedMessage(event){
 	  	messageText = messageText.toLowerCase();
 	  	var index = messageText.search("error");
 	  	if (index >= 0){
-	  		var errorMessage = messageText.slice(index,messageText.length);
+	  		var errorMessage = messageText.slice(index+5,messageText.length);
 	  		sendToStack(senderID,errorMessage);
 	  	}
 	  	else{
