@@ -9,7 +9,7 @@ app.listen((process.env.PORT || 3000));
 
 // Server frontpage
 app.get('/', function (req, res) {
-    res.send('This is a modified Github integrated TestBot Server');
+    res.send('This is Github integrated TestBot Server');
 });
 
 // Facebook Webhook
@@ -58,7 +58,7 @@ function receivedMessage(event){
 	  		break;
 
 	  		default: //echo
-	  		sendTextMessage(senderID, {text: "did you just say" + messageText+"?"});
+	  		sendTextMessage(senderID, {text: "did you just say" + event.message.text+"?"});
         
 	  	}
 	  }
