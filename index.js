@@ -9,7 +9,7 @@ app.listen((process.env.PORT || 3000));
 
 // Server frontpage
 app.get('/', function (req, res) {
-    res.send('This is Github integrated TestBot Server');
+    res.send('This is a modified Github integrated TestBot Server');
 });
 
 // Facebook Webhook
@@ -28,14 +28,44 @@ app.post('/webhook', function (req, res) {
     for (i = 0; i < events.length; i++) {
         var event = events[i];
         if (event.message && event.message.text) {
-            sendMessage(event.sender.id, {text: "did you just say" + event.message.text+"?"});
+            receivedMessage(event);
         }
     }
     res.sendStatus(200);
 });
 
-// generic function sending messages
-function sendMessage(recipientId, message) {
+
+function receivedMessage(event){
+	  var senderID = event.sender.id;
+	  var recipientID = event.recipient.id;
+	  var timeOfMessage = event.timestamp;
+	  var message = event.message;
+
+	  console.log("Received message for user %d and page %d at %d with message:", 
+	    senderID, recipientID, timeOfMessage);
+	  console.log(JSON.stringify(message));
+
+	  var messageID = message.mid;
+
+	  // You may get a text or attachment but not both
+	  var messageText = message.text;
+	  var messageAttachments = message.attachments;
+
+	  if (messageText) {
+	  	switch(messageText){
+	  		case 'error': //stack
+	  		sendGenericMessage(recipientID);
+	  		break;
+
+	  		default: //echo
+	  		sendTextMessage(Se, {text: "did you just say" + event.messageText+"?"});
+        
+	  	}
+	  }
+}
+
+// sends text messages
+function sendTextMessage(recipientId, message) {
     request({
         url: 'https://graph.facebook.com/v2.6/me/messages',
         qs: {access_token: process.env.PAGE_ACCESS_TOKEN},
@@ -52,3 +82,54 @@ function sendMessage(recipientId, message) {
         }
     });
 };
+
+
+
+// sends structured message with a generic template
+function sendGenericMessage(recipientId) {
+  var trouble = "error"
+  var messageData = {
+    recipient: {
+      id: recipientId
+    },
+    message: {
+      attachment: {
+        type: "template",
+        payload: {
+          template_type: "generic",
+          elements: [{
+            title: "You might find this helpful",
+            subtitle: "stackoverflow similar error",
+            item_url: "http://stackoverflow.com/search?q="+trouble,               
+            image_url: "http://stacktoheap.com/images/stackoverflow.png",
+            buttons: [{
+              type: "web_url",
+              url: "http://stackoverflow.com/search?q="+trouble,
+              title: "Get Help from Stack"
+            }, {
+              type: "postback",
+              title: "Call Postback",
+              payload: "Payload for first bubble",
+            }],
+          }, {
+            title: "touch",
+            subtitle: "Your Hands, Now in VR",
+            item_url: "https://www.oculus.com/en-us/touch/",               
+            image_url: "http://messengerdemo.parseapp.com/img/touch.png",
+            buttons: [{
+              type: "web_url",
+              url: "https://www.oculus.com/en-us/touch/",
+              title: "Open Web URL"
+            }, {
+              type: "postback",
+              title: "Call Postback",
+              payload: "Payload for second bubble",
+            }]
+          }]
+        }
+      }
+    }
+  };  
+
+  callSendAPI(messageData);
+}
