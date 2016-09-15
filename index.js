@@ -58,7 +58,7 @@ function receivedMessage(event){
 	  		break;
 
 	  		default: //echo
-	  		sendTextMessage(Se, {text: "did you just say" + event.messageText+"?"});
+	  		sendTextMessage(senderID, {text: "did you just say" + event.messageText+"?"});
         
 	  	}
 	  }
