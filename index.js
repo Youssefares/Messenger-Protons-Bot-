@@ -86,7 +86,7 @@ function sendMessage(recipientId, message) {
 
 // sends structured message with a generic template
 function sendGenericMessage(recipientId) {
-  
+  var trouble = "error";
     var message = {
       attachment: {
         type: "template",
