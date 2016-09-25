@@ -53,13 +53,14 @@ function receivedMessage(event){
 
 	  if (messageText){
 	  	messageText = messageText.toLowerCase();
-	  	var index = messageText.search("error");
+	  	var keyword = "error";
+	  	var index = messageText.search(keyword);
 	  	if (index >= 0){
-	  		var errorMessage = messageText.slice(index+5,messageText.length);
+	  		var errorMessage = messageText.slice(index+keyword.length ,messageText.length);
 	  		sendToStack(senderID,errorMessage);
 	  	}
 	  	else{
-	  		sendMessage(senderID, {text: "did you just say " + event.message.text+"?"+index});
+	  		sendMessage(senderID, {text: "did you just say " + event.message.text+"?"});
 	  	}
 	  }
 }
@@ -84,28 +85,29 @@ function sendMessage(recipientId, message) {
 };
 
 
-// sends structured message with a generic template
+// sends to stackoverflow
 function sendToStack(recipientId,trouble) {
+	var element = {
+        title: "You might find this helpful",
+        subtitle: "It's yelling: "+trouble,
+        item_url: "http://stackoverflow.com/search?q="+trouble,               
+        image_url: "https://d13yacurqjgara.cloudfront.net/users/1249/screenshots/1889069/stackoverflow-logo.png",
+        buttons: [{
+          type: "web_url",
+          url: "http://stackoverflow.com/search?q="+trouble,
+          title: "Go to Stack"
+        }, {
+          type: "postback",
+          title: "Not helpful?",
+          payload: "Payload for first bubble",
+        }],
+    }
     var message = {
       attachment: {
         type: "template",
         payload: {
           template_type: "generic",
-          elements: [{
-            title: "You might find this helpful",
-            subtitle: "It's yelling: "+trouble,
-            item_url: "http://stackoverflow.com/search?q="+trouble,               
-            image_url: "https://d13yacurqjgara.cloudfront.net/users/1249/screenshots/1889069/stackoverflow-logo.png",
-            buttons: [{
-              type: "web_url",
-              url: "http://stackoverflow.com/search?q="+trouble,
-              title: "Go to Stack"
-            }, {
-              type: "postback",
-              title: "Not helpful?",
-              payload: "Payload for first bubble",
-            }],
-          }]
+          elements: [element]
         }
       }
     };
