@@ -1,10 +1,10 @@
-'use strict'
 const http = require('http')
+const Bot = require('messenger-bot')
 const express = require('express')
 const bodyParser = require('body-parser')
-const Bot = require('../')
 
-let bot = new Bot({
+
+const bot = new Bot({
 	token: PAGE_ACCESS_TOKEN
 })
 
@@ -21,7 +21,7 @@ bot.on('message', (payload, reply) => {
 
     reply({ text }, (err) => {
       if (err) throw err
-      	
+
       console.log(`Echoed back to ${profile.first_name} ${profile.last_name}: ${text}`)
     })
   })
