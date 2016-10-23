@@ -6,7 +6,7 @@ const bodyParser = require('body-parser')
 
 
 let bot = new Bot({
-	token: PAGE_ACCESS_TOKEN
+	token: process.env.PAGE_ACCESS_TOKEN
 })
 
 
