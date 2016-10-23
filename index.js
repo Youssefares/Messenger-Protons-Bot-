@@ -1,112 +1,97 @@
+//strict mode
 'use strict'
-const http = require('http')
-const Bot = require('messenger-bot')
-const express = require('express')
-const bodyParser = require('body-parser')
 
+//--------------------------------------------------------------------------------
+//Libs & Constants
 
-let bot = new Bot({
-	token: process.env.PAGE_ACCESS_TOKEN
-})
+	const http = require('http')
+	const Bot = require('messenger-bot')
+	const express = require('express')
+	const bodyParser = require('body-parser')
+	const {Wit, log} = require('node-wit')
 
+	//facebook page token
+	const PAGE_ACCESS_TOKEN = process.env.PAGE_ACCESS_TOKEN
+	//wit 
+	const WIT_ACCESS_TOKEN = process.env.WIT_ACCESS_TOKEN
 
-bot.on('error',(err) => {
-	console.log(err.message)
-})
+//-------------------------------------------------------------------------------
 
-bot.on('message', (payload, reply) => {
-  let text = payload.message.text
-  console.log(text)
+//Wit.ai setup
+//TODO: move this & make wit.ai & messenger non-touching
 
-  bot.getProfile(payload.sender.id, (err, profile) => {
-    if (err) throw err
-
-    reply({ text }, (err) => {
-      if (err) throw err
-
-      console.log(`Echoed back to ${profile.first_name} ${profile.last_name}: ${text}`)
+    const witClient = new Wit({
+    	accessToken: WIT_ACCESS_TOKEN,
+    	logger: new log.Logger(log.DEBUG)
     })
-  })
-})
-
-http.createServer(bot.middleware()).listen(process.env.PORT)
+    console.log(JSON.stringify(witClient))
 
 
-function receivedMessage(event){
-	  var senderID = event.sender.id;
-	  var recipientID = event.recipient.id;
-	  var timeOfMessage = event.timestamp;
-	  var message = event.message;
+//-------------------------------------------------------------------------------
+//Messenger Event Handlers via https://github.com/remixz/messenger-bot
 
-	  console.log("Received message for user %d and page %d at %d with message:", 
-	    senderID, recipientID, timeOfMessage);
-	  console.log(JSON.stringify(message));
-
-	  var messageID = message.mid;
-
-	  // You may get a text or attachment but not both
-	  var messageText = message.text;
-	  var messageAttachments = message.attachments;
-
-	  if (messageText){
-	  	messageText = messageText.toLowerCase();
-	  	var keyword = "error";
-	  	var index = messageText.search(keyword);
-	  	if (index >= 0){
-	  		var errorMessage = messageText.slice(index+keyword.length ,messageText.length);
-	  		sendToStack(senderID,errorMessage);
-	  	}
-	  	else{
-	  		sendMessage(senderID, {text: "did you just say " + event.message.text+"?"});
-	  	}
-	  }
-}
-
-// sends text messages
-function sendMessage(recipientId, message) {
-    request({
-        url: 'https://graph.facebook.com/v2.6/me/messages',
-        qs: {access_token: process.env.PAGE_ACCESS_TOKEN},
-        method: 'POST',
-        json: {
-            recipient: {id: recipientId},
-            message: message,
-        }
-    }, function(error, response, body) {
-        if (error) {
-            console.log('Error sending message: ', error);
-        } else if (response.body.error) {
-            console.log('Error: ', response.body.error);
-        }
-    });
-};
+	//new bot instance with token
+	let bot = new Bot({
+		token: PAGE_ACCESS_TOKEN,
+		verify: 'BOT_VERIFY' //for webhooking the first time
+	})
 
 
-// sends to stackoverflow
-function sendToStack(recipientId,trouble) {
-	var element = {
-        title: "You might find this helpful",
-        subtitle: "It's yelling: "+trouble,
-        item_url: "http://stackoverflow.com/search?q="+trouble,               
-        image_url: "https://d13yacurqjgara.cloudfront.net/users/1249/screenshots/1889069/stackoverflow-logo.png",
-        buttons: [{
-          type: "web_url",
-          url: "http://stackoverflow.com/search?q="+trouble,
-          title: "Go to Stack"
-        }, {
-          type: "postback",
-          title: "Not helpful?",
-          payload: "Payload for first bubble",
-        }],
-    }
-    var message = {
-      attachment: {
-        type: "template",
-        payload: {
-          template_type: "generic",
-          elements: [element] 
-        }
-      }
-    };
-  sendMessage(recipientId, message);
-}
+	bot.on('error',(err) => {
+		console.log(err.message)
+	})
+
+
+	bot.on('message', (payload, reply) => {
+		let text = payload.message.text
+	    console.log(text)
+
+	    witClient.message(text,{})
+	    .then((data) =>{
+	    	console.log('Yay, got Wit.ai response')
+	    })
+	    .catch(console.error)
+
+	    bot.getProfile(payload.sender.id, (err, profile) => {
+	        if (err) throw err
+	        
+	        console.log(text)
+	        reply({ text }, (err) => {
+	            // if (err){
+	            // 	console.log(JSON.stringify(err))
+	            // 	throw err
+	            // }
+
+
+	        console.log(`Echoed back to ${profile.first_name} ${profile.last_name}: ${text}`)
+	    })
+	  })
+	})
+
+
+//----------------------------------------------------------------------------------
+//Facebook Webhook Request Handling
+
+    //express & body parser are here!
+	let app = express()
+
+	app.use(bodyParser.json())
+	app.use(bodyParser.urlencoded({
+	  extended: true
+	}))
+
+
+
+	//Configing the way the server handles requests
+	app.get('/', (req, res) => {
+		//when facebook hits this webhook with a GET, return verify token specified in bot instance.
+	    return bot._verify(req, res)
+	})
+
+	app.post('/', (req, res) => {
+	    bot._handleMessage(req.body)
+	    res.end(JSON.stringify({status: 'ok'}))
+	})
+
+	//creating server locally on port 3000
+	http.createServer(app).listen(3000)
