@@ -16,6 +16,7 @@ bot.on('error',(err) => {
 
 bot.on('message', (payload, reply) => {
   let text = payload.message.text
+  console.log(text)
 
   bot.getProfile(payload.sender.id, (err, profile) => {
     if (err) throw err
@@ -28,25 +29,7 @@ bot.on('message', (payload, reply) => {
   })
 })
 
-let app = express()
-
-app.use(bodyParser.json())
-app.use(bodyParser.urlencoded({
-  extended: true
-}))
-
-app.get('/', (req, res) => {
-  return bot._verify(req, res)
-})
-
-app.post('/', (req, res) => {
-  bot._handleMessage(req.body)
-  res.end(JSON.stringify({status: 'ok'}))
-})
-
-http.createServer(app).listen(process.env.PORT || 3000)
-
-
+http.createServer(bot.middleware()).listen(process.env.PORT)
 
 
 function receivedMessage(event){
