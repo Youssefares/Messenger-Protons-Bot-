@@ -1,47 +1,51 @@
-var express = require('express');
-var bodyParser = require('body-parser');
-var request = require('request');
-var app = express();
+'use strict'
+const http = require('http')
+const express = require('express')
+const bodyParser = require('body-parser')
+const Bot = require('../')
 
-app.use(bodyParser.urlencoded({extended: false}));
-app.use(bodyParser.json());
-app.listen((process.env.PORT || 3000));
-
-// Server frontpage
-app.get('/', function (req, res) {
-    res.send('This is Github integrated TestBot Server');
-});
-
-// Facebook Webhook
-app.get('/webhook', function (req, res) {
-    if (req.query['hub.verify_token'] === 'testbot_verify_token') {
-        res.send(req.query['hub.challenge']);
-    } else {
-        res.send('Invalid verify token');
-    }
-});
+let bot = new Bot({
+	token: PAGE_ACCESS_TOKEN
+})
 
 
-// handler receiving messages
-app.post('/webhook', function (req, res) {
-    var events = req.body.entry[0].messaging;
-    for (i = 0; i < events.length; i++) {
-        var event = events[i];
-        
-        //received message
-        if (event.message && event.message.text) {
-            receivedMessage(event);
-        }
+bot.on('error',(err) => {
+	console.log(err.message)
+})
 
-        //receieved postback
-        else if (event.postback){
-        	console.log("postback received: "+JSON.stringify(event.postback));
-        	//react accordingly
-//TODO: handle "get started button"
-        }
-    }
-    res.sendStatus(200);
-});
+bot.on('message', (payload, reply) => {
+  let text = payload.message.text
+
+  bot.getProfile(payload.sender.id, (err, profile) => {
+    if (err) throw err
+
+    reply({ text }, (err) => {
+      if (err) throw err
+      	
+      console.log(`Echoed back to ${profile.first_name} ${profile.last_name}: ${text}`)
+    })
+  })
+})
+
+let app = express()
+
+app.use(bodyParser.json())
+app.use(bodyParser.urlencoded({
+  extended: true
+}))
+
+app.get('/', (req, res) => {
+  return bot._verify(req, res)
+})
+
+app.post('/', (req, res) => {
+  bot._handleMessage(req.body)
+  res.end(JSON.stringify({status: 'ok'}))
+})
+
+http.createServer(app).listen(3000)
+
+
 
 
 function receivedMessage(event){
@@ -116,7 +120,7 @@ function sendToStack(recipientId,trouble) {
         type: "template",
         payload: {
           template_type: "generic",
-          elements: [element]
+          elements: [element] 
         }
       }
     };
