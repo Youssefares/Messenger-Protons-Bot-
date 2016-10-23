@@ -1,10 +1,11 @@
+'use strict'
 const http = require('http')
 const Bot = require('messenger-bot')
 const express = require('express')
 const bodyParser = require('body-parser')
 
 
-const bot = new Bot({
+let bot = new Bot({
 	token: PAGE_ACCESS_TOKEN
 })
 
