@@ -8,59 +8,45 @@
 	const Bot = require('messenger-bot')
 	const express = require('express')
 	const bodyParser = require('body-parser')
-	const {Wit, log} = require('node-wit')
 
-	//facebook page token
-	const PAGE_ACCESS_TOKEN = process.env.PAGE_ACCESS_TOKEN
-	//wit 
-	const WIT_ACCESS_TOKEN = process.env.WIT_ACCESS_TOKEN
+	const config = require('./config')
+	const NLProcessor = require('./Processor')
 
 //-------------------------------------------------------------------------------
-
-//Wit.ai setup
-//TODO: move this & make wit.ai & messenger non-touching
-
-    const witClient = new Wit({
-    	accessToken: WIT_ACCESS_TOKEN,
-    	logger: new log.Logger(log.DEBUG)
-    })
-    console.log(JSON.stringify(witClient))
-
+    //initing the Natural Lang Processor
+	let processor = new NLProcessor()
+	console.log(JSON.stringify(processor))
 
 //-------------------------------------------------------------------------------
 //Messenger Event Handlers via https://github.com/remixz/messenger-bot
 
 	//new bot instance with token
 	let bot = new Bot({
-		token: PAGE_ACCESS_TOKEN,
+		token: config.PAGE_ACCESS_TOKEN,
 		verify: 'BOT_VERIFY' //for webhooking the first time
 	})
-
 
 	bot.on('error',(err) => {
 		console.log(err.message)
 	})
 
-
 	bot.on('message', (payload, reply) => {
 		let text = payload.message.text
 	    console.log(text)
 
-	    witClient.message(text,{})
-	    .then((data) =>{
+	    processor.message(text,{},(data) => {
 	    	console.log('Yay, got Wit.ai response')
 	    })
-	    .catch(console.error)
 
 	    bot.getProfile(payload.sender.id, (err, profile) => {
 	        if (err) throw err
 	        
 	        console.log(text)
 	        reply({ text }, (err) => {
-	            // if (err){
-	            // 	console.log(JSON.stringify(err))
-	            // 	throw err
-	            // }
+	            if (err){
+	            	console.log(JSON.stringify(err))
+	            	throw err
+	            }
 
 
 	        console.log(`Echoed back to ${profile.first_name} ${profile.last_name}: ${text}`)
