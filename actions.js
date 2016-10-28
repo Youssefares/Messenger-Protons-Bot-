@@ -8,7 +8,7 @@ const config = require('./config')
 
 let bot = new Bot({
 		token: config.PAGE_ACCESS_TOKEN,
-		verify: 'BOT_VERIFY' //for webhooking the first time
+		verify: config.VERIFY_TOKEN //for webhooking the first time
 	})
 
 const actions = {
