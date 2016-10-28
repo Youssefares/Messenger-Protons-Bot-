@@ -8,23 +8,16 @@
 	const Bot = require('messenger-bot')
 	const express = require('express')
 	const bodyParser = require('body-parser')
-
-	const config = require('./config')
-	const NLProcessor = require('./Processor')
+	const actions = require('./actions')
 
 //-------------------------------------------------------------------------------
-    //initing the Natural Lang Processor
-	let processor = new NLProcessor()
+    //initing the Natural Lang Processor with actions from actions.js
+	let processor = require('./Processor').processor
 	console.log(JSON.stringify(processor))
 
+	let bot = processor.bot
 //-------------------------------------------------------------------------------
 //Messenger Event Handlers via https://github.com/remixz/messenger-bot
-
-	//new bot instance with token
-	let bot = new Bot({
-		token: config.PAGE_ACCESS_TOKEN,
-		verify: 'BOT_VERIFY' //for webhooking the first time
-	})
 
 	bot.on('error',(err) => {
 		console.log(err.message)
@@ -34,24 +27,10 @@
 		let text = payload.message.text
 	    console.log(text)
 
-	    processor.message(text,{},(data) => {
-	    	console.log('Yay, got Wit.ai response')
+	    //TODO: store context somewhere for third argument
+	    processor.runActions(payload.sender.id, text, {},(context) => {
+	    	console.log(context)
 	    })
-
-	    bot.getProfile(payload.sender.id, (err, profile) => {
-	        if (err) throw err
-	        
-	        console.log(text)
-	        reply({ text }, (err) => {
-	            if (err){
-	            	console.log(JSON.stringify(err))
-	            	throw err
-	            }
-
-
-	        console.log(`Echoed back to ${profile.first_name} ${profile.last_name}: ${text}`)
-	    })
-	  })
 	})
 
 
@@ -65,8 +44,6 @@
 	app.use(bodyParser.urlencoded({
 	  extended: true
 	}))
-
-
 
 	//Configing the way the server handles requests
 	app.get('/', (req, res) => {

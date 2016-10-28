@@ -1,31 +1,37 @@
 'use strict'
 const {Wit, log} = require('node-wit')
+
 const config = require('./config')
+const {bot, actions} = require('./actions')
+
 
 //Wrapper NLP class for what's currently a wit.ai processor
 class NLProcessor{
-
-	constructor(){
+	constructor(bot, actions){
+		this.bot = bot
 		this.instance = new Wit({
 	    	accessToken: config.WIT_ACCESS_TOKEN,
+	    	actions: actions,
 	    	logger: new log.Logger(log.DEBUG)
         })
 	}
 
 
 	toJSON(){
-		return JSON.stringify(this.instance)
+		return JSON.stringify({wit_client: this.instance, bot: this.bot})
 	}
 
-	message(text,context,completionHandler){
-		this.instance.message(text,context)
+	runActions(sessionId, text, context, completionHandler){
+		this.instance.runActions(sessionId,text,context)
 	    .then(completionHandler)
 	}
 }
 
-module.exports = NLProcessor
 
 
+//initing the Natural Lang Processor with actions from actions.js
+let processor = new NLProcessor(bot, actions)
+module.exports = {
+	processor: processor
+}
 
-// let processor = new NLProcessor()
-// console.log(JSON.stringify(processor))
