@@ -29,6 +29,7 @@
 
 	    //TODO: store context somewhere for third argument
 	    processor.runActions(payload.sender.id, text, {},(context) => {
+	    	console.log("I'm here")
 	    	console.log(context)
 	    })
 	})

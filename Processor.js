@@ -22,8 +22,7 @@ class NLProcessor{
 	}
 
 	runActions(sessionId, text, context, completionHandler){
-		this.instance.runActions(sessionId,text,context)
-	    .then(completionHandler)
+		this.instance.runActions(sessionId,text,context).then(completionHandler)
 	}
 }
 

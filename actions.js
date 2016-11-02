@@ -12,31 +12,27 @@ let bot = new Bot({
 	})
 
 const actions = {
-	send({sessionId},{text}){
-		bot.getProfile(sessionId, (err, profile) => {
-		    if (err) throw err
-		        
-		    console.log(text)
-		    // reply({ text }, (err) => {
-		    //     if (err){
-		    //     	console.log(JSON.stringify(err))
-		    //     	throw err
-		    //     }
+	send(request,response){
+		const{sessionId,context,entities} = request
+		const{text,quickreplies} = response
 
-		    //     console.log(`Echoed back to ${profile.first_name} ${profile.last_name}: ${text}`)
-		    // })
-        })
+		return new Promise(function(resolve, reject){
+			console.log(JSON.stringify(response))
+			console.log(JSON.stringify(request))
+
+			return resolve()
+		})
     },
 
 	aboutError({context, entities}){
 		//debugging
-		console.log("context:"+context)
-		console.log("context:"+context)
-
-		//bugging..erm, code.
+		console.log("context:")
+		console.log(context)
+		
+		//bugging..erm, coding.
 		return new Promise(function(resolve,reject){
 			//api call goes here
-
+			
 			context.error_help = "{error_help}"
 			return resolve(context)
 		})
