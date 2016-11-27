@@ -9,6 +9,7 @@
 	const express = require('express')
 	const bodyParser = require('body-parser')
 	const actions = require('./actions')
+	const {findOrCreateSession, sessions} = require('./sessions')
 
 //-------------------------------------------------------------------------------
     //initing the Natural Lang Processor with actions from actions.js
@@ -27,10 +28,15 @@
 		let text = payload.message.text
 	    console.log(text)
 
-	    //TODO: store context somewhere for third argument
-	    processor.runActions(payload.sender.id, text, {},(context) => {
+	    //any session for this facebook id (sender's)
+	    const sessionId = findOrCreateSession(payload.sender.id)
+
+	    processor.runActions(sessionId, text, sessions[sessionId].context, (context) => {
 	    	console.log("I'm here")
-	    	console.log(context)
+	    	console.log(sessions[sessionId].context)
+
+	    	//update context in various ways
+	    	sessions[sessionId].context = context;
 	    })
 	})
 

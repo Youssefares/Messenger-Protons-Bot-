@@ -16,7 +16,6 @@ class NLProcessor{
         })
 	}
 
-
 	toJSON(){
 		return JSON.stringify({wit_client: this.instance, bot: this.bot})
 	}
