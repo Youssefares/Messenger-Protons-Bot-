@@ -12,7 +12,7 @@
 	const {findOrCreateSession, sessions} = require('./sessions')
 
 //-------------------------------------------------------------------------------
-    //initing the Natural Lang Processor with actions from actions.js
+    //getting the Natural Lang Processor instanitaed in processor.js with actions from actions.js
 	let processor = require('./Processor').processor
 	console.log(JSON.stringify(processor))
 
@@ -26,17 +26,13 @@
 
 	bot.on('message', (payload, reply) => {
 		let text = payload.message.text
-	    console.log(text)
-
 	    //any session for this facebook id (sender's)
 	    const sessionId = findOrCreateSession(payload.sender.id)
 
 	    processor.runActions(sessionId, text, sessions[sessionId].context, (context) => {
-	    	console.log("I'm here")
-	    	console.log(sessions[sessionId].context)
-
 	    	//update context in various ways
-	    	sessions[sessionId].context = context;
+
+	    	sessions[sessionId].context = context
 	    })
 	})
 
