@@ -12,7 +12,7 @@ exports.findOrCreateSession = (fbid) => {
 	let sessionId;
 
 	//already got session key?
-	Object.keys(sessions).forEach(k => {	
+	Object.keys(sessions).forEach(k => {
 		//Yes? Got it.
 		if(sessions[k].fbid == fbid){
 			sessionId = k;

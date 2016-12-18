@@ -16,35 +16,53 @@ let bot = new Bot({
 
 //defining Natural Language Processor actions
 const actions = {
-	
-    aboutError({context, entities}){
-		//debugging
-		//bugging..erm, coding.
-		return new Promise(function(resolve,reject){
-			//api call goes here
-			context.about_error= "error_help"
-			return resolve(context)
-		})
-	},
 
-	send(request,response){
-		const{sessionId,context,entities} = request
-		const recipientId = sessions[sessionId].fbid
-		const{text,quickreplies,confidence} = response
-
-		let quick_replies = formatQuickReplies(quickreplies)
-
-		return new Promise(function(resolve, reject){	
-			bot.sendMessage(recipientId,{text,quick_replies},(err,info)=> {
-				if(err) console.log(err)
+	  hasNotError({context, entities}){
+			return new Promise(function(resolve,reject){
+				if(entities['error']){
+					return reject(context)
+				}
+				else{
+					context.hasNotError = true
+					return resolve(context)
+				}
 			})
-			return resolve()
-		})
-    }
-	
+		},
+
+		aboutError({context, entities}){
+			return new Promise(function(resolve,reject){
+				//api call goes here
+				context.about_error= "error_help"
+				delete context.hasNotError
+				return resolve(context)
+			})
+	  },
+
+		send(request,response){
+			const{sessionId,context,entities} = request
+			const recipientId = sessions[sessionId].fbid
+			const{text,quickreplies,confidence} = response
+
+			let quick_replies = formatQuickReplies(quickreplies)
+
+			return new Promise(function(resolve, reject){
+				bot.sendMessage(recipientId,{text,quick_replies},(err,info)=> {
+					if(err) console.log(err)
+				})
+				return resolve()
+			})
+	  },
+
+		clearContext({context}){
+			return new Promise(function(resolve,reject){
+				context = {}
+				return resolve(context)
+			})
+		}
+
 }
 
 module.exports = {
-	bot:bot, 
+	bot:bot,
 	actions:actions
 }

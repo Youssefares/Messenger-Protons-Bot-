@@ -4,9 +4,9 @@
 exports.formatQuickReplies = (quickreplies) => {
 	let quick_replies
 		if(quickreplies){
-			
+
 			quick_replies = []
-			
+
 			for(var reply of quickreplies){
 				quick_replies.push({
 					"content_type":"text",
