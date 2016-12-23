@@ -25,7 +25,8 @@
 	})
 
 	bot.on('message', (payload, reply) => {
-		let text = payload.message.text
+	   	let text = payload.message.text
+		  console.log("\n\n---------------------------------\n"+text+"\n")
 	    //any session for this facebook id (sender's)
 	    const sessionId = findOrCreateSession(payload.sender.id)
 
@@ -60,4 +61,4 @@
 	})
 
 	//creating server locally on port 3000
-	http.createServer(app).listen(3000)
+	http.createServer(app).listen(process.env.PORT)

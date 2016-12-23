@@ -1,31 +1,42 @@
 //Bot client-side actions called upon by the Natural Language Processors (currently Wit.ai)
 'use strict'
 
-
 const Bot = require('messenger-bot')
-const config = require('./config')
 const {sessions} = require('./sessions')
 const {formatQuickReplies} = require('./fb_formatter')
 
 //getting fb bot instance
 let bot = new Bot({
-	token: config.PAGE_ACCESS_TOKEN,
-	verify: config.VERIFY_TOKEN //for webhooking the first time
+	token: process.env.PAGE_ACCESS_TOKEN,
+	verify: process.env.VERIFY_TOKEN //for webhooking the first time
 })
 
 
 //defining Natural Language Processor actions
 const actions = {
-
-	  hasNotError({context, entities}){
+	  defineIntent({context, entities}){
 			return new Promise(function(resolve,reject){
-				if(entities['error']){
-					return reject(context)
-				}
-				else{
-					context.hasNotError = true
-					return resolve(context)
-				}
+					if('intent' in entities){
+						let intent = entities.intent[0].value
+
+						switch(intent){
+							case "error":
+								if('error' in entities){
+									context["error"] = true
+								}
+								else{
+									context["error(unspecified)"] = true
+								}
+								break
+
+							default:
+								context[intent] = true
+						}
+						return resolve(context)
+					}
+					else{
+						return reject(context)
+					}
 			})
 		},
 
@@ -59,7 +70,6 @@ const actions = {
 				return resolve(context)
 			})
 		}
-
 }
 
 module.exports = {

@@ -1,7 +1,5 @@
 'use strict'
 const {Wit, log} = require('node-wit')
-
-const config = require('./config')
 const {bot, actions} = require('./actions')
 
 
@@ -10,7 +8,7 @@ class NLProcessor{
 	constructor(bot, actions){
 		this.bot = bot
 		this.instance = new Wit({
-	    	accessToken: config.WIT_ACCESS_TOKEN,
+	    	accessToken: process.env.WIT_ACCESS_TOKEN,
 	    	actions: actions,
 	    	logger: new log.Logger(log.DEBUG)
         })
@@ -32,4 +30,3 @@ let processor = new NLProcessor(bot, actions)
 module.exports = {
 	processor: processor
 }
-
