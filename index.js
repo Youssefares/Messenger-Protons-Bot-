@@ -13,12 +13,12 @@
 
 //-------------------------------------------------------------------------------
     //getting the Natural Lang Processor instanitaed in processor.js with actions from actions.js
-	let processor = require('./Processor').processor
-	console.log(JSON.stringify(processor))
+	let witMessengerBot = require('./WitMessengerBot').witMessengerBot
+	console.log(JSON.stringify(witMessengerBot))
 
 	let sessionHandler = new SessionHandler()
 
-	let bot = processor.bot
+	let bot = witMessengerBot.bot
 //-------------------------------------------------------------------------------
 //Messenger Event Handlers via https://github.com/remixz/messenger-bot
 
@@ -39,12 +39,15 @@
 				if(reply == null){
 					sessionHandler.create(senderId)
 				}
+				//else deserialize reply JSON string into context object
 				else{
 					context = JSON.parse(reply)
 				}
 
-				processor.runActions(senderId, text, context, (context) => {
+				//run actions from wit.ai
+				witMessengerBot.runActions(senderId, text, context, (context) => {
 					if(context == null){
+						//if the context objec
 						sessionHandler.writeWithExpiration(senderId, JSON.stringify(context))
 					}
 					sessionHandler.write(senderId, JSON.stringify(context))
@@ -53,9 +56,6 @@
 			})
 	})
 
-
-//----------------------------------------------------------------------------------
-//Facebook Webhook Request Handling
 
     //express & body parser are here!
 	let app = express()
