@@ -15,6 +15,7 @@
     "express": "^4.14.0",
     "messenger-bot": "^2.4.0",
     "node-wit": "^4.1.0",
+    "redis": "^2.6.3",
     "request": "^2.74.0"
   }
 }

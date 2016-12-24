@@ -14,6 +14,6 @@ exports.formatQuickReplies = (quickreplies) => {
 					"payload": reply
 				})
 			}
-	    }
-	return quick_replies
+	 }
+	 return quick_replies
 }
