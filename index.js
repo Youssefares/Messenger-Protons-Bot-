@@ -9,12 +9,14 @@
 	const express = require('express')
 	const bodyParser = require('body-parser')
 	const actions = require('./actions')
-	const {findOrCreateSession, sessions} = require('./sessions')
+	const SessionHandler = require('./SessionHandler')
 
 //-------------------------------------------------------------------------------
     //getting the Natural Lang Processor instanitaed in processor.js with actions from actions.js
 	let processor = require('./Processor').processor
 	console.log(JSON.stringify(processor))
+
+	let sessionHandler = new SessionHandler()
 
 	let bot = processor.bot
 //-------------------------------------------------------------------------------
@@ -26,15 +28,29 @@
 
 	bot.on('message', (payload, reply) => {
 	   	let text = payload.message.text
+			let senderId = payload.sender.id
 		  console.log("\n\n---------------------------------\n"+text+"\n")
-	    //any session for this facebook id (sender's)
-	    const sessionId = findOrCreateSession(payload.sender.id)
 
-	    processor.runActions(sessionId, text, sessions[sessionId].context, (context) => {
-	    	//update context in various ways
+			//read or create session for this user
+			sessionHandler.read(senderId,function(err,reply){
 
-	    	sessions[sessionId].context = context
-	    })
+				var context = {}
+				//create session if it doesn't exist
+				if(reply == null){
+					sessionHandler.create(senderId)
+				}
+				else{
+					context = JSON.parse(reply)
+				}
+
+				processor.runActions(senderId, text, context, (context) => {
+					if(context == null){
+						sessionHandler.writeWithExpiration(senderId, JSON.stringify(context))
+					}
+					sessionHandler.write(senderId, JSON.stringify(context))
+		    })
+
+			})
 	})
 
 

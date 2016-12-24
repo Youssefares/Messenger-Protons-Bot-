@@ -2,7 +2,6 @@
 'use strict'
 
 const Bot = require('messenger-bot')
-const {sessions} = require('./sessions')
 const {formatQuickReplies} = require('./fb_formatter')
 
 //getting fb bot instance
@@ -51,7 +50,7 @@ const actions = {
 
 		send(request,response){
 			const{sessionId,context,entities} = request
-			const recipientId = sessions[sessionId].fbid
+			const recipientId = sessionId
 			const{text,quickreplies,confidence} = response
 
 			let quick_replies = formatQuickReplies(quickreplies)
