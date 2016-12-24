@@ -3,41 +3,52 @@
 
 //defining Natural Language Processor actions
 const actions = {
+
+    //looks at the user's entities & intent and modifies the context object accordingly
 	  defineIntent({context, entities}){
 			return new Promise(function(resolve,reject){
-					if('intent' in entities){
-						let intent = entities.intent[0].value
+				//if no intent defined, do nothing
+				if(!('intent' in entities)){
+					return reject(context)
+				}
 
-						switch(intent){
-							case "error":
-								if('error' in entities){
-									context["error"] = true
-								}
-								else{
-									context["error(unspecified)"] = true
-								}
-								break
+				//else great.
+				else{
+					//look at intent
+					let intent = entities.intent[0].value
+					switch(intent){
+						case "error":
+						  //if the intent is error && error type is known:
+							  //set the context-key: error
+							if('error' in entities){
+								context["error"] = true
+							}
+							//if the intent is error && error type is unknown:
+								//set the context-key: error(unspecified)
+							else{
+								context["error(unspecified)"] = true
+							}
+							break
 
-							default:
-								context[intent] = true
-						}
-						return resolve(context)
+							//else just set context-key: *whatever intent is*
+						default:
+							context[intent] = true
 					}
-					else{
-						return reject(context)
-					}
+					return resolve(context)
+				}
 			})
 		},
 
+		//gets error help for when an error type is specified
 		aboutError({context, entities}){
 			return new Promise(function(resolve,reject){
 				//api call goes here
 				context.about_error= "error_help"
-				delete context.hasNotError
 				return resolve(context)
 			})
 	  },
 
+		//clears the context object completely
 		clearContext({context}){
 			return new Promise(function(resolve,reject){
 				context = {}
@@ -46,6 +57,4 @@ const actions = {
 		}
 }
 
-module.exports = {
-	actions:actions
-}
+module.exports = actions
