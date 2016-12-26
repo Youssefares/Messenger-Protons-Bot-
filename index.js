@@ -15,9 +15,10 @@ const actions = require('./actions')
 //intializing a messenger bot instance + a wit.ai instance inside of witMessengerBot
 let bot = new WitMessengerBot({
 	token: process.env.PAGE_ACCESS_TOKEN,
-	verify: process.env.VERIFY_TOKEN,
+	verify: process.env.VERIFY_TOKEN
+},{
 	accessToken: process.env.WIT_ACCESS_TOKEN,
-	actions: actions //for webhooking the first time
+	actions: actions
 })
 
 //debugging
@@ -29,9 +30,6 @@ let sessionHandler = new SessionHandler()
 /* _______________________________________________________
  * listening on messages
  */
-
- //TODO: do I move this to the witMessengerBot class?
-
 
 bot.on('error',(err) => {
 	console.log(err.message)

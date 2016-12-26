@@ -6,17 +6,18 @@ const {formatQuickReplies} = require('./fb_formatter')
 //class with messenger bot & wit.ai instance composition
 //main function: invoking NLP from wit.ai & the right actions thereof.
 class WitMessengerBot extends Bot{
-	constructor(options){
-		super(options)
+	constructor(fbOptions, witOptions){
+		super(fbOptions)
+
 		//add the default send function as a function that calls the method: this.send
-		options.actions['send'] = (request, response) =>{
+		witOptions.actions['send'] = (request, response) =>{
 			return this.send(request, response)
 		}
 
 		//getting wit app instance with the actions defined
 		this.witInstance = new Wit({
-	    	accessToken: options.accessToken,
-				actions: options.actions,
+	    	accessToken: witOptions.accessToken,
+				actions: witOptions.actions,
 	    	logger: new log.Logger(log.DEBUG)
     })
 	}
