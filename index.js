@@ -13,10 +13,15 @@ const WitMessengerBot = require('./WitMessengerBot')
 const actions = require('./actions')
 
 //intializing a messenger bot instance + a wit.ai instance inside of witMessengerBot
-let witMessengerBot = new WitMessengerBot(actions)
+let bot = new WitMessengerBot({
+	token: process.env.PAGE_ACCESS_TOKEN,
+	verify: process.env.VERIFY_TOKEN,
+	accessToken: process.env.WIT_ACCESS_TOKEN,
+	actions: actions //for webhooking the first time
+})
 
 //debugging
-console.log(JSON.stringify(witMessengerBot))
+console.log(JSON.stringify(bot))
 
 //initializing sessionHandling (currently with: redis)
 let sessionHandler = new SessionHandler()
@@ -27,7 +32,6 @@ let sessionHandler = new SessionHandler()
 
  //TODO: do I move this to the witMessengerBot class?
 
-let bot = witMessengerBot.bot
 
 bot.on('error',(err) => {
 	console.log(err.message)
@@ -52,7 +56,7 @@ bot.on('message', (payload, reply) => {
 			}
 
 			//run actions from wit.ai
-			witMessengerBot.runActions(senderId, text, context, (context) => {
+			bot.runActions(senderId, text, context, (context) => {
 				if(context == null){
 					//if the context object is empty, write & set an expiration time on it
 					//TODO: get the expiration to actually work
