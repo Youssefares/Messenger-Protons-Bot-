@@ -66,13 +66,16 @@ bot.on('message', (payload, reply) => {
 
 			//run actions from wit.ai
 			bot.runActions(senderId, text, context, (context) => {
-				if(context == null){
-					//if the context object is empty, write & set an expiration time on it
-					//TODO: get the expiration to actually work
+				//if the context object is empty, write & set an expiration time on it
+				if(Object.keys(context).length === 0){
+					console.log("writing with expiration")
 					sessionHandler.writeWithExpiration(senderId, JSON.stringify(context))
 				}
-				//else just write
-				sessionHandler.write(senderId, JSON.stringify(context))
+				//else if not empty, just write it
+				else{
+					console.log("writing without expiration")
+			  	sessionHandler.write(senderId, JSON.stringify(context))
+		   	}
 	    })
 		})
 })
