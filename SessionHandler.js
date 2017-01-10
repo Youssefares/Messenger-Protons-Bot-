@@ -13,7 +13,7 @@ class SessionHandler{
 	constructor(){
 		//getting redis instance
 		this.client = redis.createClient()
-		this.LIFETIME = 60
+		this.TTL = 60*60*2  //time to live for sessions with expiration time
 	}
 
 	read(sessionId,completionHandler){
@@ -30,7 +30,7 @@ class SessionHandler{
 
 	writeWithExpiration(sessionId, sessionData){
 		this.write(sessionId, sessionData)
-		this.client.expire(sessionId, this.LIFETIME)
+		this.client.expire(sessionId, this.TTL)
 	}
 }
 
