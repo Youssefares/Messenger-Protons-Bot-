@@ -39,6 +39,17 @@ bot.on('message', (payload, reply) => {
    	let text = payload.message.text
 		let senderId = payload.sender.id
 	  console.log("\n\n---------------------------------\n"+text+"\n")
+		//some interaction..
+
+		//let user know the bot has seen the message
+		bot.sendSenderAction(senderId, 'mark_seen',function(err,reply){
+			if(err) throw err
+		})
+
+		//let user know the bot is typing..
+		bot.sendSenderAction(senderId, 'typing_on',function(err,reply){
+			if(err) throw err
+		})
 
 		//read or create session for this user
 		sessionHandler.read(senderId,function(err,reply){
@@ -63,7 +74,6 @@ bot.on('message', (payload, reply) => {
 				//else just write
 				sessionHandler.write(senderId, JSON.stringify(context))
 	    })
-
 		})
 })
 
