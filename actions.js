@@ -8,8 +8,12 @@ const actions = {
 	  defineIntent({context, entities}){
 			return new Promise(function(resolve,reject){
 				//if no intent defined, do nothing
+				//handling when defineIntent is the very first called action.
+				if(!entities){
+					return reject(new Error('Got called at wrong time'))
+				}
 				if(!('intent' in entities)){
-					return reject(context)
+					return reject(new Error('Intent Undefined'))
 				}
 
 				//else great.

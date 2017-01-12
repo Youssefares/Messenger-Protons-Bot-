@@ -3,8 +3,8 @@ const {Wit, log} = require('node-wit')
 const Bot = require('messenger-bot')
 const {formatQuickReplies} = require('./fb_formatter')
 
-//class with messenger bot & wit.ai instance composition
-//main function: invoking NLP from wit.ai & the right actions thereof.
+//extends Bot from https://github.com/remixz/messenger-bot
+//has wit.ai NLP functionality + messenger's SEND api.
 class WitMessengerBot extends Bot{
 	constructor(fbOptions, witOptions){
 		super(fbOptions)
@@ -24,8 +24,17 @@ class WitMessengerBot extends Bot{
 
 	//run actions of the wit.ai instance
 	runActions(sessionId, text, context, completionHandler){
-		this.witInstance.runActions(sessionId,text,context).then(completionHandler)
+		var witMessengerBot = this
+		this.witInstance.runActions(sessionId,text,context).then(completionHandler).catch(function(error){
+			console.log(error.message)
+			if(error.message == 'Intent Undefined'){
+				witMessengerBot.sendMessage(sessionId,{text: "I'm sorry. I didn't get that, but I get smarter each message."},(err,info)=>{
+					if(err) console.log(err)
+				})
+			}
+		})
 	}
+
 
 	//implementation of the wit.ai required send function with messenger platform sendMessage
 	send(request,response){

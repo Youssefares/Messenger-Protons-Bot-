@@ -76,6 +76,12 @@ bot.on('message', (payload, reply) => {
 					console.log("writing without expiration")
 			  	sessionHandler.write(senderId, JSON.stringify(context))
 		   	}
+
+				//stop typing
+				//TODO: do I really need this? Given I reply in all scenarios.
+				bot.sendSenderAction(senderId, 'typing_off',function(err,reply){
+					if(err) throw err
+				})
 	    })
 		})
 })
