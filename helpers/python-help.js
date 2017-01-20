@@ -22,8 +22,7 @@ function help(lines){
 
   var result = /(if|while)\s+(\w+)\s*=(?!=)\s*(.+)\s*:\s+.*\s+SyntaxError: invalid syntax/.exec(lines)
   if(result){
-    let response = String.raw`Looks like you forgot to use "==" to compare "${result[2]}" and "${result[3]}" inside your ${result[1]} condition.` +
-    '\nRemember a single = sign means assignment:\nx == 1 is a literal of type bool that is either true or false.\nx = 1 is a statement that puts 1 inside of x.'
+    let response = String.raw`Ughh 😠.. Looks like you forgot to use "==" to compare "${result[2]}" and "${result[3]}" inside your ${result[1]} condition.`
 
     return { response: response, groups: groups(result)}
   }
@@ -38,7 +37,7 @@ function help(lines){
   */
   result = /(if|while)\s+\w+\s*={2,3}(?!=)\s*[^:]+\s*\s+.*\s+SyntaxError: invalid syntax/.exec(lines)
   if(result){
-    let response = String.raw`Looks like you \'re missing a colon ":" at the end of your ${result[1]} condition.`
+    let response = String.raw`Looks like you're missing a colon ":" at the end of your ${result[1]} condition.`
     return {response: response, groups: groups(result)}
   }
 

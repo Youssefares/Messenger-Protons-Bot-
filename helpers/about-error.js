@@ -4,10 +4,12 @@
 const help = require('./python-help')
 
 //gets error help for when an error type is specified
-exports.aboutError = ({context, entities}) => {
+exports.aboutError = ({sessionId, context, text, entities}) => {
   return new Promise(function(resolve,reject){
-
-    context.about_error= "error_help"
+    var about_error = help(text).response
+    if(about_error){
+      context.about_error = about_error
+    }
     return resolve(context)
   })
 }
