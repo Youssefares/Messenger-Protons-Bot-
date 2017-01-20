@@ -1,7 +1,7 @@
 'use strict'
 const {Wit, log} = require('node-wit')
 const Bot = require('messenger-bot')
-const {formatQuickReplies} = require('./fb_formatter')
+const {formatQuickReplies} = require('./fb-formatter')
 
 //extends Bot from https://github.com/remixz/messenger-bot
 //has wit.ai NLP functionality + messenger's SEND api.
