@@ -28,7 +28,7 @@ class WitMessengerBot extends Bot{
 		this.witInstance.runActions(sessionId,text,context).then(completionHandler).catch(function(error){
 			console.log(error.message)
 			if(error.message == 'Intent Undefined'){
-				witMessengerBot.sendMessage(sessionId,{text: "I'm sorry. I didn't get that, but I get smarter each message."},(err,info)=>{
+				witMessengerBot.sendMessage(sessionId,{text: "😵 I didn't get that, but I get smarter each message."},(err,info)=>{
 					if(err) console.log(err)
 				})
 			}

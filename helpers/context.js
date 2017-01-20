@@ -14,25 +14,26 @@ exports.defineIntent = ({context, entities}) => {
       return reject(new Error('Intent Undefined'))
     }
     //look at intent
-    let intent = entities.intent[0].value
-    switch(intent){
-      case "error":
-        //if the intent is error && error type is known:
-          //set the context-key: error
-        if('error' in entities){
-          context["error"] = true
-        }
-        //if the intent is error && error type is unknown:
-          //set the context-key: error(unspecified)
-        else{
-          context["error(unspecified)"] = true
-        }
-        break
+    entities.intent.forEach((intent) =>{
+      switch(intent.value){
+        case "error":
+          //if the intent is error && error type is known:
+            //set the context-key: error
+          if('error' in entities){
+            context["error"] = true
+          }
+          //if the intent is error && error type is unknown:
+            //set the context-key: error(unspecified)
+          else{
+            context["error(unspecified)"] = true
+          }
+          break
 
-        //else just set context-key: *whatever intent is* to true
-      default:
-        context[intent] = true
-    }
+          //else just set context-key: *whatever intent is* to true
+        default:
+          context[intent.value] = true
+      }
+    })
     return resolve(context)
   })
 }
