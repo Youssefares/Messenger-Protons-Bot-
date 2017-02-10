@@ -13,25 +13,29 @@ class SessionHandler{
 	constructor(){
 		//getting redis instance
 		this.client = redis.createClient()
-		this.TTL = 60*60*2  //time to live for sessions with expiration time
+		// this.TTL = 60*60*2  //time to live for sessions with expiration time
 	}
 
 	read(sessionId,completionHandler){
 		this.client.get(sessionId, completionHandler)
 	}
 
-	create(sessionId){
-		this.writeWithExpiration(sessionId, '{}')
+	delete(sessionId){
+		this.client.del(sessionId)
 	}
+
+	// create(sessionId){
+	// 	this.writeWithExpiration(sessionId, '{}')
+	// }
 
 	write(sessionId, sessionData){
 		this.client.set(sessionId, sessionData)
 	}
 
-	writeWithExpiration(sessionId, sessionData){
-		this.write(sessionId, sessionData)
-		this.client.expire(sessionId, this.TTL)
-	}
+	// writeWithExpiration(sessionId, sessionData){
+	// 	this.write(sessionId, sessionData)
+	// 	this.client.expire(sessionId, this.TTL)
+	// }
 }
 
 module.exports = SessionHandler

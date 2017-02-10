@@ -5,8 +5,8 @@
 const http = require('http')
 const express = require('express')
 const bodyParser = require('body-parser')
-const SessionHandler = require('./SessionHandler')
 const WitMessengerBot = require('./WitMessengerBot')
+const {findOrCreateSession, sessions} = require('./sessions')
 
 
 //actions object to initialize wit instance
@@ -22,10 +22,9 @@ let bot = new WitMessengerBot({
 })
 
 //debugging
-console.log(JSON.stringify(bot))
+// console.log(JSON.stringify(bot))
 
-//initializing sessionHandling (currently with: redis)
-let sessionHandler = new SessionHandler()
+
 
 /* _______________________________________________________
  * listening on messages
@@ -39,8 +38,8 @@ bot.on('message', (payload, reply) => {
    	let text = payload.message.text
 		let senderId = payload.sender.id
 	  console.log("\n\n---------------------------------\n"+text+"\n")
-		//some interaction..
 
+		//some interaction..
 		//let user know the bot has seen the message
 		bot.sendSenderAction(senderId, 'mark_seen',function(err,reply){
 			if(err) throw err
@@ -51,39 +50,53 @@ bot.on('message', (payload, reply) => {
 			if(err) throw err
 		})
 
-		//read or create session for this user
-		sessionHandler.read(senderId,function(err,reply){
+		//gettingContext
+		var context = {}
+		const sessionId = new Date().toISOString()
+		const sessionData = JSON.stringify({fbid: senderId, context: {}})
+		bot.sessionHandler.write(sessionId, sessionData)
 
-			var context = {}
-			//create session if it doesn't exist
-			if(reply == null){
-				sessionHandler.create(senderId)
-			}
-			//else deserialize reply JSON string into context object
-			else{
-				context = JSON.parse(reply)
-			}
+    //running NLP actions
+		bot.runActions(sessionId, text, context, (context) => {
+			bot.sessionHandler.delete(sessionId)
 
-			//run actions from wit.ai
-			bot.runActions(senderId, text, context, (context) => {
-				//if the context object is empty, write & set an expiration time on it
-				if(Object.keys(context).length === 0){
-					console.log("writing with expiration")
-					sessionHandler.writeWithExpiration(senderId, JSON.stringify(context))
-				}
-				//else if not empty, just write it
-				else{
-					console.log("writing without expiration")
-			  	sessionHandler.write(senderId, JSON.stringify(context))
-		   	}
-
-				//stop typing
-				//TODO: do I really need this? Given I reply in all scenarios.
-				bot.sendSenderAction(senderId, 'typing_off',function(err,reply){
-					if(err) throw err
-				})
-	    })
+			//stop typing
+			//TODO: do I really need this? Given I reply in all scenarios.
+			bot.sendSenderAction(senderId, 'typing_off',function(err,reply){
+				if(err) throw err
+			})
 		})
+
+
+		// //read or create session for this user
+		// sessionHandler.read(senderId,function(err,reply){
+		//
+		// 	var context = {}
+		// 	//create session if it doesn't exist
+		// 	if(reply == null){
+		// 		sessionHandler.create(senderId)
+		// 	}
+		// 	//else deserialize reply JSON string into context object
+		// 	else{
+		// 		context = JSON.parse(reply)
+		// 	}
+		//
+		// 	//run actions from wit.ai
+		// 	bot.runActions(senderId, text, context, (context) => {
+		// 		//if the context object is empty, write & set an expiration time on it
+		// 		if(Object.keys(context).length === 0){
+		// 			console.log("writing with expiration")
+		// 			sessionHandler.writeWithExpiration(senderId, JSON.stringify(context))
+		// 		}
+		// 		//else if not empty, just write it
+		// 		else{
+		// 			console.log("writing without expiration")
+		// 	  	sessionHandler.write(senderId, JSON.stringify(context))
+		//    	}
+		//
+		//
+	  //   })
+		// })
 })
 
 /*_______________________________________________________
