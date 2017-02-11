@@ -17,7 +17,10 @@ class SessionHandler{
 	}
 
 	read(sessionId,completionHandler){
-		this.client.get(sessionId, completionHandler)
+		this.client.get(sessionId, function(err,reply){
+			console.log(reply)
+			completionHandler(err, JSON.parse(reply))
+		})
 	}
 
 	delete(sessionId){
@@ -29,7 +32,7 @@ class SessionHandler{
 	// }
 
 	write(sessionId, sessionData){
-		this.client.set(sessionId, sessionData)
+		this.client.set(sessionId, JSON.stringify(sessionData))
 	}
 
 	// writeWithExpiration(sessionId, sessionData){

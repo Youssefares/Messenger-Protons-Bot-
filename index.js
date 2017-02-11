@@ -53,11 +53,12 @@ bot.on('message', (payload, reply) => {
 		//gettingContext
 		var context = {}
 		const sessionId = new Date().toISOString()
-		const sessionData = JSON.stringify({fbid: senderId, context: {}})
+		const sessionData = {fbid: senderId, context: {}}
 		bot.sessionHandler.write(sessionId, sessionData)
 
     //running NLP actions
 		bot.runActions(sessionId, text, context, (context) => {
+			//TODO: if has error, keep it until it has helpful & error, only then discard.
 			bot.sessionHandler.delete(sessionId)
 
 			//stop typing

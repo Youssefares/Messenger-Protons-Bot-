@@ -34,7 +34,7 @@ class WitMessengerBot extends Bot{
 			console.log(error.message)
 			if(error.message == 'Intent Undefined'){
 				  witMessengerBot.sessionHandler.read(sessionId, function(err,reply){
-					const sessionData = JSON.parse(reply)
+					const sessionData = reply
 					const recipientId = sessionData.fbid
 					witMessengerBot.sendMessage(recipientId,{text: "😵 I didn't get that, but I get smarter each message."},(err,info)=> {
 						if(err) console.log(err)
@@ -50,7 +50,7 @@ class WitMessengerBot extends Bot{
 		const{sessionId,context,entities} = request
 		var witMessengerBot = this
 		this.sessionHandler.read(sessionId, function(err,reply){
-			const sessionData = JSON.parse(reply)
+			const sessionData = reply
 			const recipientId = sessionData.fbid
 			const{text,quickreplies,confidence} = response
 			let quick_replies = formatQuickReplies(quickreplies)
