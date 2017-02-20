@@ -6,6 +6,9 @@ const http = require('http')
 const express = require('express')
 const bodyParser = require('body-parser')
 const WitMessengerBot = require('./WitMessengerBot')
+const {
+    manageContext
+} = require('./helpers/context');
 
 
 //actions object to initialize wit instance
@@ -30,7 +33,7 @@ let bot = new WitMessengerBot({
  */
 
 bot.on('error', (err) => {
-    console.log(err.message)
+    console.log("botError: "+err.message)
 })
 
 bot.on('message', (payload, reply) => {
@@ -49,20 +52,23 @@ bot.on('message', (payload, reply) => {
         if (err) throw err
     })
 
-		//start or resume a conversaton
+    //start or resume a conversaton
     bot.sessionHandler.findOrCreateSession(senderId, function(err, reply) {
         let sessionId = reply
         bot.sessionHandler.read(sessionId, function(err, reply) {
-            console.log(reply)
             var context = reply.context
             var senderId = reply.fbid
             //running NLP actions
             bot.runActions(sessionId, text, context, (context) => {
                 //TODO: if has error, keep it until it has helpful & error, only then discard.
-								// if('error' in context && 'about_error' in context && !('helpful' in context || 'not-helpful' in context)){
-								//
-								// }
-								bot.sessionHandler.delete(sessionId)
+								console.log("\n\ncontext-before: "+JSON.stringify(context))
+								context = manageContext(context)
+								console.log("context-after: "+JSON.stringify(context))
+
+								//delete if(empty object), else update.
+                if (Object.keys(context).length === 0 && context.constructor === Object)
+                    bot.sessionHandler.delete(sessionId)
+								else bot.sessionHandler.write(sessionId, {fbid: senderId, context: context})
 
                 //stop typing
                 //TODO: do I really need this? Given I reply in all scenarios.

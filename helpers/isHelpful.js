@@ -13,11 +13,14 @@ exports.isHelpful = ({context, entities}) => {
     }
 
     entities.intent.forEach((intent) =>{
+      console.log(intent.value)
       switch(intent.value){
-        case 'helpful':
+        case "helpful":
           context[intent.value] = true
-        case 'not-helpufl':
+          break
+        case "not-helpful":
           context[intent.value] = true
+          break
         default:
           return reject(new Error('unexpected intent value'))
       }

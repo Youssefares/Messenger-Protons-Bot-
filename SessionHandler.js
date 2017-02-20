@@ -41,10 +41,8 @@ class SessionHandler {
 				self.sessionForFbid(fbid, function(err, reply) {
             if (!reply) {
                 self.create(fbid, function(err, reply){
-                  console.log(reply)
                   self.sessionForFbid(fbid, completionHandler)
                 })
-								console.log("creating session..")
             }
             else if (completionHandler) completionHandler(err, reply)
         })
@@ -54,7 +52,6 @@ class SessionHandler {
     //gets sessionId from fbid and executes completionHandler
     sessionForFbid(fbid, completionHandler) {
         this.client.get(fbid, function(err, reply) {
-            console.log(reply)
             if(completionHandler) completionHandler(err, reply)
         })
     }

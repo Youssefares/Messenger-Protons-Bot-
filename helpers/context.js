@@ -46,3 +46,13 @@ exports.clearContext = ({context}) =>{
     return resolve(context)
   })
 }
+
+
+exports.manageContext = (context) =>{
+  //remember that we provided error help in 'about_error' and want feedback.
+  if('error' in context && 'about_error' in context && !('helpful' in context || 'not-helpful' in context)){
+    return context
+  }
+  //Default: clear context
+  return {}
+}
