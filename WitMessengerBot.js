@@ -2,7 +2,6 @@
 const {Wit, log} = require('node-wit')
 const Bot = require('messenger-bot')
 const {formatQuickReplies} = require('./fb-formatter')
-const {sessions} = require('./sessions');
 const SessionHandler = require('./SessionHandler')
 
 //extends Bot from https://github.com/remixz/messenger-bot

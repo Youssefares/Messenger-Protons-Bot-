@@ -5,7 +5,7 @@
 //looks at the user's entities & intent and modifies the context object accordingly
 exports.defineIntent = ({context, entities}) => {
   return new Promise(function(resolve,reject){
-    //handling when defineIntent is the very first called action.
+    //handling action timing error
     if(!entities){
       return reject(new Error('Got called at wrong time'))
     }
