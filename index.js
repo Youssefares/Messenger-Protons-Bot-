@@ -5,10 +5,9 @@
 const http = require('http')
 const express = require('express')
 const bodyParser = require('body-parser')
-const WitMessengerBot = require('./WitMessengerBot')
-const {
-    manageContext
-} = require('./helpers/context');
+const {WitMessengerBot, BotSessionsDelegate} = require('wit-messenger-bot')
+const {manageContext} = require('./helpers/context');
+require('dotenv').load();
 
 
 //actions object to initialize wit instance
@@ -21,10 +20,7 @@ let bot = new WitMessengerBot({
 }, {
     accessToken: process.env.WIT_ACCESS_TOKEN,
     actions: actions
-})
-
-//debugging
-// console.log(JSON.stringify(bot))
+}, new BotSessionsDelegate())
 
 
 
@@ -40,6 +36,9 @@ bot.on('message', (payload, reply) => {
     let text = payload.message.text
     let senderId = payload.sender.id
     console.log("\n\n---------------------------------\n" + text + "\n")
+    let {sessionId, sessionData} = bot.findOrCreateSession(senderId)
+    let context = JSON.parse(sessionData)
+
 
     //some interaction..
     //let user know the bot has seen the message
@@ -52,32 +51,33 @@ bot.on('message', (payload, reply) => {
         if (err) throw err
     })
 
-    //start or resume a conversaton
-    bot.sessionHandler.findOrCreateSession(senderId, function(err, reply) {
-        let sessionId = reply
-        bot.sessionHandler.read(sessionId, function(err, reply) {
-            var context = reply.context
-            var senderId = reply.fbid
-            //running NLP actions
-            bot.runActions(sessionId, text, context, (context) => {
-                //TODO: if has error, keep it until it has helpful & error, only then discard.
-								console.log("\n\ncontext-before: "+JSON.stringify(context))
-								context = manageContext(context)
-								console.log("context-after: "+JSON.stringify(context))
+    bot.runActions(sessionId, text, context, (context) => {
+      //conversation context logic
+      console.log("\n\ncontext-before: "+JSON.stringify(context))
+      context = manageContext(context)
+      console.log("context-after: "+JSON.stringify(context))
 
-								//delete if(empty object), else update.
-                if (Object.keys(context).length === 0 && context.constructor === Object)
-                    bot.sessionHandler.delete(sessionId)
-								else bot.sessionHandler.write(sessionId, {fbid: senderId, context: context})
+      //delete if(empty object), else update.
+      if (Object.keys(context).length === 0 && context.constructor === Object){
+        bot.deleteSession(sessionId)
+      }
+      else bot.writeSession(sessionId, JSON.stringify(context))
 
-                //stop typing
-                //TODO: do I really need this? Given I reply in all scenarios.
-                bot.sendSenderAction(senderId, 'typing_off', function(err, reply) {
-                    if (err) throw err
-                })
-            })
+    }).catch(function(error){
+      if(error.message == 'Intent Undefined'){
+        let recipientId = bot.fbIdForSession(sessionId)
+				bot.sendMessage(recipientId,{text: "😵 I didn't get that, but I get smarter each message."},(err,info)=> {
+					if(err) console.log(err)
+				})
+			}
+      else{
+  			console.log(error)
+        //stop typing
+        bot.sendSenderAction(senderId, 'typing_off', function(err, reply) {
+            if (err) throw err
         })
-    })
+      }
+		})
 })
 
 /*_______________________________________________________
