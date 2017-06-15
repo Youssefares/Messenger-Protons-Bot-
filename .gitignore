@@ -3,3 +3,5 @@ ngrok
 .env
 default.realm.*
 default.realm
+*.log
+realm-object-server
