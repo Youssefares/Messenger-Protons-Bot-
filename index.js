@@ -6,7 +6,12 @@ const http = require('http')
 const express = require('express')
 const bodyParser = require('body-parser')
 const {WitMessengerBot, BotSessionsDelegate} = require('wit-messenger-bot')
+
+//Helpers
 const {manageContext} = require('./helpers/context');
+const {actHuman} = require('./helpers/act-human');
+
+//load environment vars
 require('dotenv').load();
 
 
@@ -41,15 +46,7 @@ bot.on('message', (payload, reply) => {
 
 
     //some interaction..
-    //let user know the bot has seen the message
-    bot.sendSenderAction(senderId, 'mark_seen', function(err, reply) {
-        if (err) throw err
-    })
-
-    //let user know the bot is typing..
-    bot.sendSenderAction(senderId, 'typing_on', function(err, reply) {
-        if (err) throw err
-    })
+    actHuman(bot, senderId)
 
     bot.runActions(sessionId, text, context, (context) => {
       //conversation context logic
@@ -83,10 +80,12 @@ bot.on('message', (payload, reply) => {
 
 bot.on('postback', function(payload, reply, actions){
   let senderId = payload.sender.id
+  actHuman(bot, senderId)
   var payload = payload['postback']['payload']
   if(payload == "GET_STARTED_PAYLOAD"){
     var onboardingMsgs = require('./JSON-data/onboarding.json')
     reply(onboardingMsgs['msg1'])
+    actHuman(bot, senderId)
     reply(onboardingMsgs['msg2'])
   }
 })

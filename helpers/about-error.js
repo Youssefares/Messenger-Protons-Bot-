@@ -13,10 +13,6 @@ exports.aboutError = ({sessionId, context, text, entities}) => {
 
       //TODO: return better error.
       if(error) return reject(error)
-      //if I don't have response I'll do sth else.
-      else if(body == ''){
-        context.about_error = "something_I_know_from_error_type"
-      }
       else{
         var helpObj = JSON.parse(body)
         context.about_error = helpObj.response
@@ -24,4 +20,9 @@ exports.aboutError = ({sessionId, context, text, entities}) => {
       return resolve(context)
     });
   })
+}
+
+
+exports.furtherAboutError = ({sessionId, context, text, entities}) =>{
+
 }

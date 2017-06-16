@@ -5,6 +5,7 @@
 //looks at the user's entities & intent and modifies the context object accordingly
 exports.defineIntent = ({context, entities}) => {
   return new Promise(function(resolve,reject){
+    //TODO: return better errors ----------------------
     //handling action timing error
     if(!entities){
       return reject(new Error('Got called at wrong time'))
@@ -13,6 +14,9 @@ exports.defineIntent = ({context, entities}) => {
     if(!('intent' in entities)){
       return reject(new Error('Intent Undefined'))
     }
+    //------------------------------
+
+
     //look at intent
     entities.intent.forEach((intent) =>{
       switch(intent.value){
