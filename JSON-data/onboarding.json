@@ -1,0 +1,26 @@
+{
+  "msg1": {
+    "text": "Hello! I'm here to help you debug & understand program error messages."
+  },
+
+  "msg2": {
+    "text": "I can also recommend some courses and reads to help you be a better coder. Need any help today?",
+    "quick_replies":[
+      {
+        "content_type":"text",
+        "title":"debug",
+        "payload":"debug_payload"
+      },
+      {
+        "content_type":"text",
+        "title":"find courses",
+        "payload":"find_courses_payload"
+      },
+      {
+        "content_type":"text",
+        "title":"find articles/tutorials",
+        "payload":"find_articles_payload"
+      }
+    ]
+  }
+}

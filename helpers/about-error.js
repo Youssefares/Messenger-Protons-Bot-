@@ -10,6 +10,8 @@ exports.aboutError = ({sessionId, context, text, entities}) => {
       url:     'https://python-error-helper.herokuapp.com/error-help',
       form:    { error_message: text}
     }, function(error, response, body){
+
+      //TODO: return better error.
       if(error) return reject(error)
       //if I don't have response I'll do sth else.
       else if(body == ''){

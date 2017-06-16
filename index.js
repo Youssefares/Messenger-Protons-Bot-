@@ -80,6 +80,18 @@ bot.on('message', (payload, reply) => {
 		})
 })
 
+
+bot.on('postback', function(payload, reply, actions){
+  let senderId = payload.sender.id
+  var payload = payload['postback']['payload']
+  if(payload == "GET_STARTED_PAYLOAD"){
+    var onboardingMsgs = require('./JSON-data/onboarding.json')
+    reply(onboardingMsgs['msg1'])
+    reply(onboardingMsgs['msg2'])
+  }
+})
+
+
 /*_______________________________________________________
  * setting up http-request-handling
  */
